@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "run": "deno run -A main.ts",
+    "dev": "deno fmt && deno lint"
+  },
+  "imports": {
+    "rss": "https://deno.land/x/rss@1.0.0/mod.ts"
+  },
+  "fmt": {
+    "semiColons": false,
+    "useTabs": false,
+    "lineWidth": 160
+  }
+}
+
