@@ -22,14 +22,16 @@ type Entry = {
   text: string
 }
 
+// Fetch RSS Feed and parse
 const res = await fetch("https://b.hatena.ne.jp/hotentry/it.rss")
 const xml = await res.text()
 const feeds = await parseFeed(xml)
 
-const promiseList: Promise<Entry>[] = []
+// Fetch contents per entry
+const promiseEntries: Promise<Entry>[] = []
 for (const f of feeds.entries) {
-  promiseList.push(fetchEntryData(f.title.value, f.id))
+  promiseEntries.push(fetchEntryData(f.title.value, f.id))
 }
 
-const entries: Entry[] = await Promise.all(promiseList)
+const entries: Entry[] = await Promise.all(promiseEntries)
 console.log(entries)
