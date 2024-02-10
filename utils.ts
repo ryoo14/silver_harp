@@ -10,6 +10,7 @@ export function shouldSkipUrl(url: string): boolean {
   const skipPatterns = [
     'www\.itmedia\.co\.jp',
     'togetter\.com',
+    'speakerdeck\.com',
   ];
   return skipPatterns.some(pattern => url.match(new RegExp(pattern)));
 }
