@@ -49,38 +49,57 @@ async function textToSpeech(entry: Entry): Promise<Entry> {
     if (entry.text.length === 0 || entry.text.length > 5000) {
       throw new Error(`${entry.title} has 0 or larger than 5000 text.`)
     }
-    const client = new TextToSpeechClient()
-    const audioArray = []
-    for (let i = 0; i < entry.text.length; i += 1500) {
-      const request = {
-        input: { text: entry.text.slice(i, i + 1500) },
-        voice: {
-          languageCode: "ja-JP",
-          ssmlGender: "FEMALE",
-          name: "ja-JP-Wavenet-A", // "ja-JP-Wavenet-A", "ja-JP-Standard-A", "ja-JP-Neural2-B"
-        },
-        audioConfig: {
-          audioEncoding: "MP3",
-          speakingRate: 1.5,
-        },
-      }
-      const [response] = await client.synthesizeSpeech(request)
-      audioArray.push(response.audioContent)
-    }
-    const combinedLength = audioArray.reduce((p, c) => p + c.length, 0)
-    const combined = new Uint8Array(combinedLength)
-    let position = 0
-    for (const a of audioArray) {
-      combined.set(a, position)
-      position += a.length
-    }
-    entry.audio = combined
+
+    const audioArray = await generateAudio(entry.text)
+    entry.audio = combineAudio(audioArray)
+
     return entry
   } catch (e) {
     console.error(e.message)
     entry.audio = null
     return entry
   }
+}
+
+async function generateAudio(text: string) {
+  const client = new TextToSpeechClient()
+  const audioArray = []
+  for (let i = 0; i < text.length; i += 1500) {
+    const request = {
+      input: { text: text.slice(i, i + 1500) },
+      voice: {
+        languageCode: "ja-JP",
+        ssmlGender: "FEMALE",
+        name: "ja-JP-Wavenet-A", // "ja-JP-Wavenet-A", "ja-JP-Standard-A", "ja-JP-Neural2-B"
+      },
+      audioConfig: {
+        audioEncoding: "MP3",
+        speakingRate: 1.5,
+      },
+    }
+    const [response] = await client.synthesizeSpeech(request)
+    audioArray.push(response.audioContent)
+  }
+  return audioArray
+}
+
+function combineAudio(audioArray) {
+  const combinedLength = audioArray.reduce((p, c) => p + c.length, 0)
+  const combined = new Uint8Array(combinedLength)
+  let position = 0
+  for (const a of audioArray) {
+    combined.set(a, position)
+    position += a.length
+  }
+  return combined
+}
+
+function shouldSkipUrl(url: string): boolean {
+  const skipPatterns = [
+    'www\.itmedia\.co\.jp',
+    'togetter\.com',
+  ];
+  return skipPatterns.some(pattern => url.match(new RegExp(pattern)));
 }
 
 type Entry = {
@@ -98,16 +117,15 @@ const feeds = await parseFeed(xml)
 // Fetch contents per entry
 const promiseEntries: Promise<Entry>[] = []
 for (const f of feeds.entries) {
-  if (f.id.match(/www\.itmedia\.co\.jp/)) {
+  if (shouldSkipUrl(f.id)) {
     continue
   }
   promiseEntries.push(silverHarp(f.title.value, f.id))
 }
 
 const entries: Entry[] = await Promise.all(promiseEntries)
-const es = entries.sort((a, b) => a.text.length - b.text.length)
 
-for (const e of es) {
+for (const e of entries) {
   if (e.audio == null) {
     continue
   }
