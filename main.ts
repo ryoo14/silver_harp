@@ -9,7 +9,13 @@ function debug(entries: Entry[]) {
   console.log(entries.reduce((s, e) => s + e.text.length, 0))
 }
 
-async function fetchEntryData(title: string, url: string): Promise<Entry> {
+async function silverHarp(title: string, url: string): Promise<Entry> {
+  const entry = await fetchEntry(title, url)
+  const entryWithAudio = await textToSpeech(entry)
+  return entryWithAudio
+}
+
+async function fetchEntry(title: string, url: string): Promise<Entry> {
   try {
     const res = await fetch(url)
     const text = await res.text()
@@ -17,13 +23,15 @@ async function fetchEntryData(title: string, url: string): Promise<Entry> {
       title: title,
       url: url,
       text: removeHTMLTags(text),
+      audio: null,
     }
   } catch {
-    console.log(url)
+    console.error(`Faied to fetch data from ${title}.`)
     return {
       title: title,
       url: url,
       text: "",
+      audio: null,
     }
   }
 }
@@ -36,12 +44,16 @@ function removeHTMLTags(text: string): string {
     .replace(/≪前の記事[\s\S]*/, "").replace(/≫次の記事[\s\S]*/, "") // publickey
 }
 
-async function textToSpeech(client: TextToSpeechClient, text: string) {
+async function textToSpeech(entry: Entry): Promise<Entry> {
   try {
+    if (entry.text.length === 0 || entry.text.length > 5000) {
+      throw new Error(`${entry.title} has 0 or larger than 5000 text.`)
+    }
+    const client = new TextToSpeechClient()
     const audioArray = []
-    for (let i = 0; i < text.length; i += 1500) {
+    for (let i = 0; i < entry.text.length; i += 1500) {
       const request = {
-        input: { text: text.slice(i, i + 1500) },
+        input: { text: entry.text.slice(i, i + 1500) },
         voice: {
           languageCode: "ja-JP",
           ssmlGender: "FEMALE",
@@ -62,10 +74,12 @@ async function textToSpeech(client: TextToSpeechClient, text: string) {
       combined.set(a, position)
       position += a.length
     }
-    return combined
+    entry.audio = combined
+    return entry
   } catch (e) {
-    console.log(e.message)
-    return null
+    console.error(e.message)
+    entry.audio = null
+    return entry
   }
 }
 
@@ -73,6 +87,7 @@ type Entry = {
   title: string
   url: string
   text: string
+  audio: Uint8Array | null
 }
 
 // Fetch RSS Feed and parse
@@ -86,23 +101,17 @@ for (const f of feeds.entries) {
   if (f.id.match(/www\.itmedia\.co\.jp/)) {
     continue
   }
-  promiseEntries.push(fetchEntryData(f.title.value, f.id))
+  promiseEntries.push(silverHarp(f.title.value, f.id))
 }
 
 const entries: Entry[] = await Promise.all(promiseEntries)
 const es = entries.sort((a, b) => a.text.length - b.text.length)
 
-//debug(entries)
-
-const client = new TextToSpeechClient()
-for (const [i, e] of es.entries()) {
-  if (i === 9) {
-    break
+for (const e of es) {
+  if (e.audio == null) {
+    continue
   }
-  console.log(`${e.title}: ${e.text.length}`)
-  const audio = await textToSpeech(client, e.text)
-  Deno.writeTextFileSync(`${i}.txt`, e.text)
-  if (audio != null) {
-    Deno.writeFileSync(`${i}.mp3`, audio)
-  }
+  Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace(/\//g, "-")}.mp3`, e.audio)
 }
+
+//debug(entries)
