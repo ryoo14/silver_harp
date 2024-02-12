@@ -1,0 +1,35 @@
+name: Example Github Workflow
+
+on: 
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Create MP3 Dir
+        run: mkdir mp3
+
+      - name: Touch New File
+        run: |
+          touch mp3/example1
+          touch mp3/example2
+          touch mp3/example3
+          touch mp3/example4
+          touch mp3/example5
+
+      - name: SCP Transfer
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
+          chmod 600 scp_key.pem
+          scp -i scp_key.pem -r mp3/* "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/home/"${{ secrets.SSH_USER }}"
