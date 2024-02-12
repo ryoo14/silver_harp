@@ -29,6 +29,9 @@ jobs:
           touch mp3/example4
           touch mp3/example5
 
+      - name: Create known_hosts
+        run: echo "${{ secrets.SSH_KNOWN_HOST }}" > .ssh/known_hosts
+
       - name: SCP Transfer
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
