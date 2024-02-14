@@ -59,7 +59,7 @@ async function generateAudio(text: string) {
       },
       audioConfig: {
         audioEncoding: "MP3",
-        speakingRate: 1.5,
+        speakingRate: 1.3,
       },
     }
     const [response] = await client.synthesizeSpeech(request)
