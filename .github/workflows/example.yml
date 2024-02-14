@@ -9,7 +9,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -28,6 +29,8 @@ jobs:
           touch mp3/example3
           touch mp3/example4
           touch mp3/example5
+          ls
+          pwd
 
       - name: Create known_hosts
         run: |
