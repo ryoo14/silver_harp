@@ -14,3 +14,14 @@ export function shouldSkipUrl(url: string): boolean {
   ]
   return skipPatterns.some((pattern) => url.match(new RegExp(pattern)))
 }
+
+export function checkResponseCode(response: Response): boolean {
+  let flag
+  if (response.status === 200) {
+    flag = true
+  } else {
+    flag = false
+  }
+
+  return flag
+}
