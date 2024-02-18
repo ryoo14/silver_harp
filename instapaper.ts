@@ -12,6 +12,7 @@ function generateRequest(oauth: OAuth, requestConfig: RequestConfig, token?: Tok
   headers.append("authorization", oauth.toHeader(oauthData).Authorization)
 
   const bodies = requestConfig.data ? new URLSearchParams(Object.entries(requestConfig.data)) : undefined
+
   const request = new Request(requestConfig.url, {
     method: requestConfig.method,
     headers: headers,
@@ -27,6 +28,7 @@ async function getToken(oauth: OAuth): Promise<Token> {
   if (!username || !password) {
     throw new Error("Error: Required environment variable 'INSTAPAPER_USER_XXX' is not defined. Please set it before running the application.")
   }
+
   const requestConfig: RequestConfig = {
     method: "POST",
     url: "https://www.instapaper.com/api/1.1/oauth/access_token",
@@ -60,7 +62,12 @@ async function getBookmarks(oauth: OAuth, token: Token): Promise<Bookmark[]> {
     url: "https://www.instapaper.com/api/1.1/bookmarks/list",
   }
   const request = generateRequest(oauth, requestConfig, token)
+
   const response = await fetch(request)
+  if (!checkResponseCode(response)) {
+    throw new Error(`Error: Failed to get bookmark list. Response code is ${response.status}`)
+  }
+
   const bookmarks: Bookmark[] = JSON.parse(await response.text()).bookmarks
   return bookmarks
 }
@@ -74,6 +81,7 @@ async function getBookmarkText(oauth: OAuth, bookmarkID: string, token: Token): 
     },
   }
   const request = generateRequest(oauth, requestConfig, token)
+
   const response = await fetch(request)
   if (!checkResponseCode(response)) {
     throw new Error(`Error: Failed to get bookmark text(${bookmarkID}). Response code is ${response.status}`)
@@ -91,6 +99,7 @@ async function deleteBookmark(oauth: OAuth, bookmarkID: string, token: Token): P
     },
   }
   const request = generateRequest(oauth, requestConfig, token)
+
   const response = await fetch(request)
   if (!checkResponseCode(response)) {
     throw new Error(`Error: Failed to delete bookmark(${bookmarkID}). Response code is ${response.status}`)
@@ -101,7 +110,7 @@ function generateEntryFromBookmarks(bookmarks: Bookmark[]): Entry[] {
   const entries: Entry[] = []
   for (const b of bookmarks) {
     entries.push({
-      id: b.bookmark_id,
+      id: b.bookmark_id.toString(),
       title: b.title,
       url: b.url,
       text: "",
@@ -136,9 +145,9 @@ export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
 
     const entriesWithText: Entry[] = []
     for (const e of entries) {
-      const text = await getBookmarkText(oauth, e.id.toString(), token)
+      const text = await getBookmarkText(oauth, e.id, token)
       if (text != null) {
-        await deleteBookmark(oauth, e.id.toString(), token)
+        await deleteBookmark(oauth, e.id, token)
       }
       entriesWithText.push({
         id: e.id,

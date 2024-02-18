@@ -1,5 +1,5 @@
 export type Entry = {
-  id: number
+  id: string
   title: string
   url: string
   text: string
