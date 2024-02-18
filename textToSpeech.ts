@@ -2,38 +2,14 @@ import { TextToSpeechClient } from "tts"
 import { Entry } from "./types.ts"
 import { removeHTMLTags } from "./utils.ts"
 
-export async function silverHarp(title: string, url: string): Promise<Entry> {
-  const entry = await fetchEntry(title, url)
+export async function silverHarp(entry: Entry): Promise<Entry> {
   const entryWithAudio = await textToSpeech(entry)
   return entryWithAudio
 }
 
-async function fetchEntry(title: string, url: string): Promise<Entry> {
-  try {
-    const res = await fetch(url)
-    const text = await res.text()
-    return {
-      title: title,
-      url: url,
-      text: removeHTMLTags(text),
-      audio: null,
-    }
-  } catch {
-    console.error(`Faied to fetch data from ${title}.`)
-    return {
-      title: title,
-      url: url,
-      text: "",
-      audio: null,
-    }
-  }
-}
-
 async function textToSpeech(entry: Entry): Promise<Entry> {
   try {
-    if (entry.text.length === 0 || entry.text.length > 5000) {
-      throw new Error(`${entry.title} has 0 or larger than 5000 text.`)
-    }
+    entry.text = removeHTMLTags(entry.text)
 
     const audioArray = await generateAudio(entry.text)
     entry.audio = combineAudio(audioArray)

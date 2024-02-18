@@ -4,7 +4,6 @@
     "dev": "deno fmt && deno lint"
   },
   "imports": {
-    "rss": "https://deno.land/x/rss@1.0.0/mod.ts",
     "tts": "https://esm.sh/@google-cloud/text-to-speech@5.0.2"
   },
   "fmt": {

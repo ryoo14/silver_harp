@@ -2,7 +2,9 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "npm:@google-cloud/text-to-speech": "npm:@google-cloud/text-to-speech@5.0.2"
+      "npm:@google-cloud/text-to-speech": "npm:@google-cloud/text-to-speech@5.0.2",
+      "npm:crypto-js": "npm:crypto-js@4.2.0",
+      "npm:oauth-1.0a": "npm:oauth-1.0a@2.2.6"
     },
     "npm": {
       "@google-cloud/text-to-speech@5.0.2": {
@@ -172,6 +174,10 @@
         "dependencies": {
           "delayed-stream": "delayed-stream@1.0.0"
         }
+      },
+      "crypto-js@4.2.0": {
+        "integrity": "sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==",
+        "dependencies": {}
       },
       "debug@4.3.4": {
         "integrity": "sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==",
@@ -365,6 +371,10 @@
         "dependencies": {
           "whatwg-url": "whatwg-url@5.0.0"
         }
+      },
+      "oauth-1.0a@2.2.6": {
+        "integrity": "sha512-6bkxv3N4Gu5lty4viIcIAnq5GbxECviMBeKR3WX/q87SPQ8E8aursPZUtsXDnxCs787af09WPRBLqYrf/lwoYQ==",
+        "dependencies": {}
       },
       "object-hash@3.0.0": {
         "integrity": "sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==",
