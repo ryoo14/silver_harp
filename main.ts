@@ -1,4 +1,4 @@
-import { shouldSkipUrl } from "./utils.ts"
+import { combineAudio, getCurrentTimestamp, shouldSkipUrl } from "./utils.ts"
 import { silverHarp } from "./textToSpeech.ts"
 import { Entry } from "./types.ts"
 import { getTextAndDeleteBookmarks } from "./instapaper.ts"
@@ -17,17 +17,19 @@ for (const e of entriesWithNullAudio) {
 const entries: Entry[] = await Promise.all(promiseEntries)
 const entriesExcludeNullAudio: Entry[] = entries.filter((e) => e.audio != null)
 
-// Fetch and update RSS Feed
-
 // Merge audio
+const audioArray: Uint8Array[] = entriesExcludeNullAudio.map((e) => e.audio as Uint8Array)
+const audio: Uint8Array = combineAudio(audioArray)
+const yyyymmddhh: string = getCurrentTimestamp()
+Deno.writeFileSync(`${Deno.cwd()}/mp3/${yyyymmddhh}.mp3`, audio as Uint8Array)
 
-// Generate MP3 file
 for (const e of entriesExcludeNullAudio) {
-  if (e.audio == null) {
-    continue
-  }
-  Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace(/\//g, "-")}.mp3`, e.audio)
+  // Fetch and update RSS Feed
+
+  console.log(e.text.length)
 }
+
+// Insert chapter to MP3
 
 // Debug
 // deno-lint-ignore no-unused-vars
