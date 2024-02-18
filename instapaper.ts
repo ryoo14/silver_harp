@@ -16,7 +16,7 @@ function generateRequest(oauth: OAuth, requestConfig: RequestConfig, token?: Tok
   const request = new Request(requestConfig.url, {
     method: requestConfig.method,
     headers: headers,
-    body: bodies
+    body: bodies,
   })
 
   return request
@@ -39,7 +39,7 @@ async function getToken(oauth: OAuth): Promise<Token> {
     },
   }
   const request = generateRequest(oauth, requestConfig)
-  
+
   const response = await fetch(request)
   if (!checkResponseCode(response)) {
     throw new Error(`Error: Failed to get Instapaper token. Response code is ${response.status}`)
@@ -50,9 +50,9 @@ async function getToken(oauth: OAuth): Promise<Token> {
   const params = new URLSearchParams(tokenString)
   const token: Token = {
     key: params.get("oauth_token") || "",
-    secret: params.get("oauth_token_secret") || ""
+    secret: params.get("oauth_token_secret") || "",
   }
-  
+
   return token
 }
 
