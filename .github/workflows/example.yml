@@ -23,7 +23,9 @@ jobs:
         run: mkdir mp3
 
       - name: Create JSON
-        run: echo "${{ secrets.GOOGLE_AUTH }}" >> silver_harp.json
+        env: 
+          JSON: "${{ secrets.GOOGLE.AUTH }}"
+        run: echo "$JSON" >> silver_harp.json
 
       - name: Setup ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
@@ -36,12 +38,12 @@ jobs:
           github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
 
       - name: Instapaper API
-        run: deno run -A main.ts
         env:
           INSTAPAPER_CONSUMER_KEY: "${{ secrets.INSTAPAPER_CONSUMER_KEY }}"
           INSTAPAPER_CONSUMER_SECRET: "${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
           INSTAPAPER_USER_PASSWORD: "${{ secrets.INSTAPAPER_USER_PASSWORD }}"
           INSTAPAPER_USER_NAME: "${{ secrets.INSTAPAPER_USER_NAME }}"
+        run: deno run -A main.ts
 
       - name: Merge audio files and insert chapters
         run: bash insert-chapter_and_merge-audio.sh
