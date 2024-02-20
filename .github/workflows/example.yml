@@ -2,8 +2,8 @@ name: Example Github Workflow
 
 on: 
   workflow_dispatch:
-  schedule:
-    - cron: '0 2,15 * * 1-5'
+    #schedule:
+    #  - cron: '0 2,15 * * 1-5'
 
 jobs:
   build-and-deploy:
