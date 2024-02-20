@@ -24,7 +24,7 @@ jobs:
 
       - name: Create JSON
         env: 
-          JSON: "${{ secrets.GOOGLE.AUTH }}"
+          JSON: "${{ secrets.GOOGLE_AUTH }}"
         run: echo "$JSON" >> silver_harp.json
 
       - name: Setup ffmpeg
