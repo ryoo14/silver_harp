@@ -23,7 +23,10 @@ async function textToSpeech(entry: Entry): Promise<Entry> {
 }
 
 async function generateAudio(text: string) {
-  const client = new TextToSpeechClient()
+  const json = JSON.parse(Deno.readTextFileSync("silver_harp.json"))
+  const client = new TextToSpeechClient({
+    credentials: json,
+  })
   const audioArray = []
   for (let i = 0; i < text.length; i += 1500) {
     const request = {
