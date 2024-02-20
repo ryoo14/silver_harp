@@ -22,15 +22,28 @@ jobs:
       - name: Create MP3 Dir
         run: mkdir mp3
 
-      - name: Touch New File
+      - name: Export Variables
         run: |
-          touch mp3/example1
-          touch mp3/example2
-          touch mp3/example3
-          touch mp3/example4
-          touch mp3/example5
-          ls
-          pwd
+          export INSTAPAPER_CONSUMER_KEY="${{ secrets.INSTAPAPER_CONSUMER_KEY }}"
+          export INSTAPAPER_CONSUMER_SECRET="${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
+          export INSTAPAPER_USER_PASSWORD="${{ secrets.INSTAPAPER_USER_PASSWORD }}"
+          export INSTAPAPER_USER_NAME="${{ secrets.INSTAPAPER_USER_NAME }}"
+
+      - name: Setup ffmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v3
+        with:
+          ffmpeg-version: release
+          architecture: ''
+          linking-type: static
+          # As of version 3 of this action, builds are no longer downloaded from GitHub
+          # except on Windows: https://github.com/GyanD/codexffmpeg/releases.
+          github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+
+      - name: Instapaper API
+        run: deno run -A main.ts
+
+      - name: Merge audio files and insert chapters
+        run: bash insert-chapter_and_merge-audio.sh
 
       - name: Create known_hosts
         run: |
@@ -42,4 +55,4 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
           chmod 600 scp_key.pem
-          scp -i scp_key.pem -r mp3/* "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/home/"${{ secrets.SSH_USER }}"
+          scp -i scp_key.pem -r mp3/$(date +"%Y%m%d%H").mp3 "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/home/"${{ secrets.SSH_USER }}"
