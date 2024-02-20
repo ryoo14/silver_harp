@@ -24,10 +24,6 @@ jobs:
 
       - name: Export Variables
         run: |
-          export INSTAPAPER_CONSUMER_KEY="${{ secrets.INSTAPAPER_CONSUMER_KEY }}"
-          export INSTAPAPER_CONSUMER_SECRET="${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
-          export INSTAPAPER_USER_PASSWORD="${{ secrets.INSTAPAPER_USER_PASSWORD }}"
-          export INSTAPAPER_USER_NAME="${{ secrets.INSTAPAPER_USER_NAME }}"
 
       - name: Setup ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v3
@@ -41,6 +37,11 @@ jobs:
 
       - name: Instapaper API
         run: deno run -A main.ts
+        env:
+          INSTAPAPER_CONSUMER_KEY: "${{ secrets.INSTAPAPER_CONSUMER_KEY }}"
+          INSTAPAPER_CONSUMER_SECRET: "${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
+          INSTAPAPER_USER_PASSWORD: "${{ secrets.INSTAPAPER_USER_PASSWORD }}"
+          INSTAPAPER_USER_NAME: "${{ secrets.INSTAPAPER_USER_NAME }}"
 
       - name: Merge audio files and insert chapters
         run: bash insert-chapter_and_merge-audio.sh
