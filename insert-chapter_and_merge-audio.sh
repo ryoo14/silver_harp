@@ -35,6 +35,11 @@ if check_command ffmpeg; then
   while IFS= read -r -d $'\n' file; do
     AUDIO_FILE_ARRAY+=("$file")
   done < <(find ./mp3 -type f -name "*.mp3" -exec basename {} \; | sort)
+  if [ "${#AUDIO_FILE_ARRAY[@]}" -eq 0 ]; then
+    log_info "audio File is 0"
+    exit 0
+  fi
+
   YYYYMMDDHH=$(date +"%Y%m%d%H")
   MERGE_AUDIO_FILE="./mp3/${YYYYMMDDHH}.mp3"
   MERGE_TEXT_FILE="./mp3/merge.txt"
@@ -78,7 +83,7 @@ if check_command ffmpeg; then
 
   # create the temporary merged audio
   log_info "start to create tempotary merged audio"
-  ffmpeg -f concat -safe 0 -i "$MERGE_TEXT_FILE" -c copy ./mp3/tmp.mp3 > /dev/null 2>&1 
+  ffmpeg -f concat -safe 0 -i "$MERGE_TEXT_FILE" -c copy ./mp3/tmp.mp3 
   if [ -f "./mp3/tmp.mp3" ]; then
     log_success "finish to create tmp.mp3"
   else
