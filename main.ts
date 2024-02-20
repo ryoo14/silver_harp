@@ -18,15 +18,23 @@ const entries: Entry[] = await Promise.all(promiseEntries)
 const entriesExcludeNullAudio: Entry[] = entries.filter((e) => e.audio != null)
 
 // Merge audio
-const audioArray: Uint8Array[] = entriesExcludeNullAudio.map((e) => e.audio as Uint8Array)
-const audio: Uint8Array = combineAudio(audioArray)
-const yyyymmddhh: string = getCurrentTimestamp()
-Deno.writeFileSync(`${Deno.cwd()}/mp3/${yyyymmddhh}.mp3`, audio as Uint8Array)
+//const audioArray: Uint8Array[] = entriesExcludeNullAudio.map((e) => e.audio as Uint8Array)
+//const audio: Uint8Array = combineAudio(audioArray)
+//const yyyymmddhh: string = getCurrentTimestamp()
+//Deno.writeFileSync(`${Deno.cwd()}/mp3/${yyyymmddhh}.mp3`, audio as Uint8Array)
 
 for (const e of entriesExcludeNullAudio) {
   // Fetch and update RSS Feed
-
-  console.log(e.text.length)
+  const length = e.text.length
+  const title = e.title
+  let count = 0
+  for (let i = 0; i < e.text.length; i++) {
+    if (e.text[i] === "。") {
+      count++
+    }
+  }
+  console.log(`${title}: ${length}(${count})`)
+  Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace("/", "-")}.mp3`, e.audio as Uint8Array)
 }
 
 // Insert chapter to MP3
