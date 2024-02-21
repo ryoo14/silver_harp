@@ -36,18 +36,3 @@ export function combineAudio(audioArray: Uint8Array[]): Uint8Array {
   }
   return combined
 }
-
-function formatNumber(n: number): string {
-  return n < 10 ? `0${n}` : `${n}`
-}
-
-export function getCurrentTimestamp(): string {
-  const now = new Date()
-
-  const year = now.getFullYear().toString()
-  const month = formatNumber(now.getMonth() + 1)
-  const day = formatNumber(now.getDate())
-  const hour = now.getHours() < 13 ? "AM" : "PM"
-
-  return `${year}${month}${day}${hour}`
-}
