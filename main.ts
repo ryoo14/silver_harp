@@ -1,4 +1,4 @@
-import { combineAudio, getCurrentTimestamp, shouldSkipUrl } from "./utils.ts"
+import { generateItemForRSS, shouldSkipUrl } from "./utils.ts"
 import { silverHarp } from "./textToSpeech.ts"
 import { Entry } from "./types.ts"
 import { getTextAndDeleteBookmarks } from "./instapaper.ts"
@@ -24,7 +24,7 @@ const entriesExcludeNullAudio: Entry[] = entries.filter((e) => e.audio != null)
 //Deno.writeFileSync(`${Deno.cwd()}/mp3/${yyyymmddhh}.mp3`, audio as Uint8Array)
 
 for (const e of entriesExcludeNullAudio) {
-  // Fetch and update RSS Feed
+  // Create MP3
   const length = e.text.length
   const title = e.title
   let count = 0
@@ -37,7 +37,9 @@ for (const e of entriesExcludeNullAudio) {
   Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace("/", "-")}.mp3`, e.audio as Uint8Array)
 }
 
-// Insert chapter to MP3
+// Generate item for rss
+const itemRSS = generateItemForRSS(entriesExcludeNullAudio)
+Deno.writeTextFileSync(`${Deno.cwd()}/mp3/tmp.rss`, itemRSS)
 
 // Debug
 // deno-lint-ignore no-unused-vars

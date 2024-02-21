@@ -28,6 +28,17 @@ calc_msec () {
   echo "$total_msec"
 }
 
+handle_duration () {
+  local time_data=$1
+  time_data=${time_data%.*}
+  if [[ $time_data == 00:* ]]; then
+    local formatted_time="${time_data:3}"
+  else
+    local formatted_time="${time_data#0}"
+  fi
+  echo "$formatted_time"
+}
+
 if check_command ffmpeg; then
   log_info "start to insert chapter and merge audio"
 
@@ -44,61 +55,78 @@ if check_command ffmpeg; then
   MERGE_AUDIO_FILE="./mp3/${YYYYMMDDHH}.mp3"
   MERGE_TEXT_FILE="./mp3/merge.txt"
   CHAPTER_TEXT_FILE="./mp3/chapter.txt"
+  TMP_AUDIO_FILE="./mp3/tmp.mp3"
+  TMP_RSS_FILE="./mp3/tmp.rss"
+  RSS_FILE="./mp3/silver_harp.rss"
 
-  log_info "start to input header to ${CHAPTER_TEXT_FILE}"
-  echo ";FFMETADATA1" >> "$CHAPTER_TEXT_FILE"
-  echo "" >> "$CHAPTER_TEXT_FILE"
-  if [ -f "$CHAPTER_TEXT_FILE" ]; then
-    log_success "create ${CHAPTER_TEXT_FILE}"
+  #log_info "start to input header to ${CHAPTER_TEXT_FILE}"
+  #echo ";FFMETADATA1" >> "$CHAPTER_TEXT_FILE"
+  #echo "" >> "$CHAPTER_TEXT_FILE"
+  #if [ -f "$CHAPTER_TEXT_FILE" ]; then
+  #  log_success "create ${CHAPTER_TEXT_FILE}"
+  #else
+  #  log_fail "failed to create ${CHAPTER_TEXT_FILE}"
+  #  exit 1
+  #fi
+
+  #start=0
+  #log_info "start to create chapter and entry for merge per audio"
+  #for audio in "${AUDIO_FILE_ARRAY[@]}"; do
+  #  # insert the chapter info to the text file for chapter
+  #  log_info "start ${audio%.mp3}"
+  #  DURATION=$(ffmpeg -i "./mp3/${audio}" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")
+  #  duration=$(calc_msec "$DURATION")
+  #  end=$((start + duration))
+  #  title=${audio%.mp3}
+  #  
+  #  {
+  #    echo "[CHAPTER]"
+  #    echo "TIMEBASE=1/1000"
+  #    echo "START=${start}"
+  #    echo "END=${end}"
+  #    echo "title=${title}"
+  #    echo ""
+  #  } >> "$CHAPTER_TEXT_FILE"
+  #  
+  #  start="$end"
+
+  #  # insert the file path to the text file for merge
+  #  echo "file '${audio}'" >> "$MERGE_TEXT_FILE"
+  #  log_success "finish ${audio%.mp3}"
+  #done
+
+  ## create the temporary merged audio
+  #log_info "start to create tempotary merged audio"
+  #ffmpeg -f concat -safe 0 -i "$MERGE_TEXT_FILE" -c copy "$TMP_AUDIO_FILE"
+  #if [ -f "$TMP_AUDIO_FILE" ]; then
+  #  log_success "finish to create ${TMP_AUDIO_FILE}"
+  #else
+  #  log_fail "failed to create ${TMP_AUDIO_FILE}"
+  #  exit 1
+  #fi
+
+  ## create the merged audio with chapters
+  #log_info "start to create merged audio"
+  #ffmpeg -i "$TMP_AUDIO_FILE" -i "$CHAPTER_TEXT_FILE" -map_metadata 1 -c copy "$MERGE_AUDIO_FILE"
+  #if [ -f "${MERGE_AUDIO_FILE}" ]; then
+  #  log_success "finish to create ${MERGE_AUDIO_FILE}"
+  #else
+  #  log_fail "failed to create ${MERGE_AUDIO_FILE}"
+  #  exit 1
+  #fi
+
+  # create renwe RSS
+  if [ -f "$TMP_RSS_FILE" ]; then
+    RSS_TIME=$([ "${YYYYMMDDHH:8:2}" -lt "05" ] && echo "の朝記事" || echo "の夜記事")
+    RSS_TITLE="${YYYYMMDDHH:0:8}${RSS_TIME}"
+    RSS_DATE=$(TZ="Asia/Tokyo" date "+%a, %d %b %Y %H:%M:%S %z")
+    RSS_DURATION=$(handle_duration "$(ffmpeg -i "$MERGE_AUDIO_FILE" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")")
+    RSS_AUDIO_FILE_LENGTH=$(ls -l "$MERGE_AUDIO_FILE" | awk '{print $5}')
+
+    RSS_ITEM=$(cat "$TMP_RSS_FILE" | sed -e "s/_TITLE/${RSS_TITLE}/g" -e "s/_DATE/${RSS_DATE}/g" -e "s/_AUDIOFILENAME/${YYYYMMDDHH}.mp3/g" -e "s/_AUDIOFILELENGTH/${RSS_AUDIO_FILE_LENGTH}/g" -e "s/_DURATION/${RSS_DURATION}/g")
+    sed -i "s@<language>ja</language>@&\n${RSS_ITEM}" "$RSS_FILE"
   else
-    log_fail "failed to create ${CHAPTER_TEXT_FILE}"
-    exit 1
-  fi
-
-  start=0
-  log_info "start to create chapter and entry for merge per audio"
-  for audio in "${AUDIO_FILE_ARRAY[@]}"; do
-    # insert the chapter info to the text file for chapter
-    log_info "start ${audio%.mp3}"
-    DURATION=$(ffmpeg -i "./mp3/${audio}" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")
-    duration=$(calc_msec "$DURATION")
-    end=$((start + duration))
-    title=${audio%.mp3}
-    
-    {
-      echo "[CHAPTER]"
-      echo "TIMEBASE=1/1000"
-      echo "START=${start}"
-      echo "END=${end}"
-      echo "title=${title}"
-      echo ""
-    } >> "$CHAPTER_TEXT_FILE"
-    
-    start="$end"
-
-    # insert the file path to the text file for merge
-    echo "file '${audio}'" >> "$MERGE_TEXT_FILE"
-    log_success "finish ${audio%.mp3}"
-  done
-
-  # create the temporary merged audio
-  log_info "start to create tempotary merged audio"
-  ffmpeg -f concat -safe 0 -i "$MERGE_TEXT_FILE" -c copy ./mp3/tmp.mp3 
-  if [ -f "./mp3/tmp.mp3" ]; then
-    log_success "finish to create tmp.mp3"
-  else
-    log_fail "failed to create tmp.mp3"
-    exit 1
-  fi
-
-  # create the merged audio with chapters
-  log_info "start to create merged audio"
-  ffmpeg -i ./mp3/tmp.mp3 -i "$CHAPTER_TEXT_FILE" -map_metadata 1 -c copy "$MERGE_AUDIO_FILE"
-  if [ -f "${MERGE_AUDIO_FILE}" ]; then
-    log_success "finish to create ${MERGE_AUDIO_FILE}"
-  else
-    log_fail "failed to create ${MERGE_AUDIO_FILE}"
-    exit 1
+    log_fail "not found ${TMP_RSS_FILE}"
   fi
 else
   log_fail "ffmpeg command not found"
