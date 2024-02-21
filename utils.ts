@@ -40,10 +40,10 @@ export function combineAudio(audioArray: Uint8Array[]): Uint8Array {
 }
 
 export function generateItemForRSS(entries: Entry[]): string {
-  const itemHeader = `<item>
-  <title>_TITLE</title>
-  <description><![CDATA[ 
-  <ul>
+  const itemHeader = `    <item>
+        <title>_TITLE</title>
+        <description><![CDATA[ 
+        <ul>
   `
 
   let itemBase = ""
@@ -51,23 +51,23 @@ export function generateItemForRSS(entries: Entry[]): string {
     const title = e.title
     const url = e.url
 
-    itemBase += `<li><a href="${url}">${title}</a></li>
+    itemBase += `        <li><a href="${url}">${title}</a></li>
     `
   }
 
-  const itemFooter = `</ul>
-  ]]></description>
-  <pubDate>_DATE</pubDate>
-  <link>https://sh.ryoo.cc/_AUDIOFILENAME</link>
-    <guid isPermaLink="true">https://sh.ryoo.cc/_AUDIOFILENAME</guid>
-    <itunes:author>ryoo14</itunes:author>
-  <dc:creator>ryoo14</dc:creator>
-  
-  <itunes:explicit>no</itunes:explicit>
-  <itunes:subtitle>_TITLE</itunes:subtitle>
-  <itunes:duration>_DURATION</itunes:duration>
-  <enclosure url="https://sh.ryoo.cc/_AUDIOFILENAME" type="audio/mpeg" length="_AUDIOFILELENGTH" />
-  </item>
+  const itemFooter = `      </ul>
+        ]]></description>
+        <pubDate>_DATE</pubDate>
+        <link>https://sh.ryoo.cc/_AUDIOFILENAME</link>
+          <guid isPermaLink="true">https://sh.ryoo.cc/_AUDIOFILENAME</guid>
+          <itunes:author>ryoo14</itunes:author>
+        <dc:creator>ryoo14</dc:creator>
+        
+        <itunes:explicit>no</itunes:explicit>
+        <itunes:subtitle>_TITLE</itunes:subtitle>
+        <itunes:duration>_DURATION</itunes:duration>
+        <enclosure url="https://sh.ryoo.cc/_AUDIOFILENAME" type="audio/mpeg" length="_AUDIOFILELENGTH" />
+      </item>
   `
 
   return itemHeader + itemBase + itemFooter
