@@ -40,7 +40,6 @@ handle_duration () {
 }
 
 if check_command ffmpeg; then
-  # variable declaration
   YYYYMMDDHH=$(date +"%Y%m%d%H")
   AUDIO_FILE_ARRAY=()
   AUDIO_SERVER="sh.ryoo.cc"
@@ -64,7 +63,7 @@ if check_command ffmpeg; then
     AUDIO_FILE_ARRAY+=("$file")
   done < <(find ./mp3 -type f -name "*.mp3" -exec basename {} \; | sort)
   if [ "${#AUDIO_FILE_ARRAY[@]}" -eq 0 ]; then
-    log_info "audio File is 0"
+    log_info "audio file does not exist"
     exit 0
   fi
 
@@ -83,9 +82,9 @@ if check_command ffmpeg; then
   for audio in "${AUDIO_FILE_ARRAY[@]}"; do
     # insert the chapter info to the text file for chapter
     log_info "start ${audio%.mp3}"
-    DURATION=$(ffmpeg -i "./mp3/${audio}" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")
-    duration=$(calc_msec "$DURATION")
-    end=$((start + duration))
+    duration=$(ffmpeg -i "./mp3/${audio}" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")
+    msec_duration=$(calc_msec "$duration")
+    end=$((start + msec_duration))
     title=${audio%.mp3}
     
     {
@@ -132,7 +131,7 @@ if check_command ffmpeg; then
     RSS_DURATION=$(handle_duration "$(ffmpeg -i "$MERGE_AUDIO_FILE" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")")
     RSS_AUDIO_FILE_LENGTH=$(ls -l "$MERGE_AUDIO_FILE" | awk '{print $5}')
 
-    RSS_ITEM=$(cat "$TMP_RSS_FILE" | sed -e "s/_TITLE/${RSS_TITLE}/g" -e "s/_DATE/${RSS_DATE}/g" -e "s/_AUDIOFILENAME/${YYYYMMDDHH}.mp3/g" -e "s/_AUDIOFILELENGTH/${RSS_AUDIO_FILE_LENGTH}/g" -e "s/_DURATION/${RSS_DURATION}/g")
+    RSS_ITEM=$(sed -e "s/_TITLE/${RSS_TITLE}/g" -e "s/_DATE/${RSS_DATE}/g" -e "s/_AUDIOFILENAME/${YYYYMMDDHH}.mp3/g" -e "s/_AUDIOFILELENGTH/${RSS_AUDIO_FILE_LENGTH}/g" -e "s/_DURATION/${RSS_DURATION}/g" "$TMP_RSS_FILE")
     RSS_ITEM=$(echo "$RSS_ITEM" | sed ':a;N;$!ba;s/\n/\\n/g')
     sed -i -e "s@<language>ja</language>@&\n${RSS_ITEM}@" "$RSS_FILE"
   else
