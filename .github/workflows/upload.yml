@@ -1,4 +1,4 @@
-name: Example Github Workflow
+name: Create audio files, update RSS feed, and upload to server
 
 on: 
   workflow_dispatch:
@@ -32,7 +32,6 @@ jobs:
         with:
           ffmpeg-version: release
           architecture: ''
-          linking-type: static
           # As of version 3 of this action, builds are no longer downloaded from GitHub
           # except on Windows: https://github.com/GyanD/codexffmpeg/releases.
           github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
@@ -59,6 +58,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
           chmod 600 scp_key.pem
           scp -i scp_key.pem -r mp3/$(date +"%Y%m%d%H").mp3 "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/home/"${{ secrets.SSH_USER }}"
+          scp -i scp_key.pem -r mp3/silvre_harp.rss "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/home/"${{ secrets.SSH_USER }}"
 
       - name: Delete files
         run: rm -rf mp3
