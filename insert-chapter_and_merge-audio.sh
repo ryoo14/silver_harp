@@ -46,12 +46,12 @@ if check_command ffmpeg; then
   CHAPTER_TEXT_FILE="./mp3/chapter.txt"
   MERGE_AUDIO_FILE="./mp3/${YYYYMMDDHH}.mp3"
   MERGE_TEXT_FILE="./mp3/merge.txt"
-  RSS_FILE="./mp3/silver_harp.rss"
+  RSS_FILE="./mp3/silverharp.rss"
   TMP_AUDIO_FILE="./mp3/tmp.mp3"
   TMP_RSS_FILE="./mp3/tmp.rss"
 
   log_info "start to wget RSS file from server"
-  wget "https://${AUDIO_SERVER}/silverharp" -O "$RSS_FILE"
+  wget --no-check-certificate "https://${AUDIO_SERVER}/silverharp" -O "$RSS_FILE"
   if [ ! -f "$RSS_FILE" ]; then
     log_fail "failed to wget RSS file from server"
     exit 1
