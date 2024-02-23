@@ -51,7 +51,7 @@ if check_command ffmpeg; then
   TMP_RSS_FILE="./mp3/tmp.rss"
 
   log_info "start to wget RSS file from server"
-  wget --no-check-certificate "https://${AUDIO_SERVER}/silverharp" -O "$RSS_FILE"
+  wget "https://${AUDIO_SERVER}/silverharp" -O "$RSS_FILE"
   if [ ! -f "$RSS_FILE" ]; then
     log_fail "failed to wget RSS file from server"
     exit 1
