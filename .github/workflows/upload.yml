@@ -45,7 +45,7 @@ jobs:
         run: deno run -A main.ts
 
       - name: Merge audio files and insert chapters
-        run: bash insert-chapter_and_merge-audio.sh
+        run: TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
 
       - name: Create known_hosts
         run: |
