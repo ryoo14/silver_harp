@@ -93,7 +93,7 @@ async function getBookmarkText(oauth: OAuth, bookmarkID: string, token: Token): 
 async function deleteBookmark(oauth: OAuth, bookmarkID: string, token: Token): Promise<void> {
   const requestConfig: RequestConfig = {
     method: "POST",
-    url: "https://www.instapaper.com/api/1.1/bookmarks/archive",
+    url: "https://www.instapaper.com/api/1.1/bookmarks/delete",
     data: {
       bookmark_id: bookmarkID,
     },
