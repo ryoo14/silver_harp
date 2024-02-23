@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
           chmod 600 scp_key.pem
-          TZ="Asia/Tokyo" scp -i scp_key.pem mp3/$(date +"%Y%m%d%H").mp3 "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/var/www/html/silverharp/
+          scp -i scp_key.pem mp3/$(TZ="Asia/Tokyo" date +"%Y%m%d%H").mp3 "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/var/www/html/silverharp/
           scp -i scp_key.pem mp3/silverharp.rss "${{ secrets.SSH_USER }}"@"${{ secrets.SSH_HOST }}":/var/www/html/silverharp/
 
       - name: Delete files
