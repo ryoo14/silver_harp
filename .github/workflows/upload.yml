@@ -50,7 +50,7 @@ jobs:
       - name: Merge audio files and insert chapters
         run: |
           TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
-          echo "CHECKING_FILE=$(if [ -f mp3/$(TZ="Asia/Tokyo date +"%Y%m%d%H".mp3) ]; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_ENV
+          echo "CHECKING_FILE=$(if [ -f mp3/$(TZ="Asia/Tokyo" date +"%Y%m%d%H".mp3) ]; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_ENV
 
       - name: Create known_hosts
         if: env.CHECKING_FILE == 'true'
