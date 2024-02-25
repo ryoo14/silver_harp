@@ -48,15 +48,19 @@ jobs:
         run: wget https://"${{ secrets.WEB_SERVER }}"/silverharp -O mp3/silverharp.rss
 
       - name: Merge audio files and insert chapters
-        run: TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
+        run: |
+          TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
+          echo "CHECKING_FILE=$(if [ -f mp3/$(TZ="Asia/Tokyo date +"%Y%m%d%H".mp3) ]; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_ENV
 
       - name: Create known_hosts
+        if: env.CHECKING_FILE == 'true'
         run: |
           mkdir ~/.ssh
           chmod 700 ~/.ssh
           ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
       - name: SCP Transfer
+        if: env.CHECKING_FILE == 'true'
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > scp_key.pem
           chmod 600 scp_key.pem
