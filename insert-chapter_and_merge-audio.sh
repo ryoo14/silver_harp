@@ -42,7 +42,6 @@ handle_duration () {
 if check_command ffmpeg; then
   YYYYMMDDHH=$(date +"%Y%m%d%H")
   AUDIO_FILE_ARRAY=()
-  AUDIO_SERVER="sh.ryoo.cc"
   CHAPTER_TEXT_FILE="./mp3/chapter.txt"
   MERGE_AUDIO_FILE="./mp3/${YYYYMMDDHH}.mp3"
   MERGE_TEXT_FILE="./mp3/merge.txt"
@@ -50,13 +49,12 @@ if check_command ffmpeg; then
   TMP_AUDIO_FILE="./mp3/tmp.mp3"
   TMP_RSS_FILE="./mp3/tmp.rss"
 
-  log_info "start to wget RSS file from server"
-  wget "https://${AUDIO_SERVER}/silverharp" -O "$RSS_FILE"
+  log_info "start to search RSS file from server"
   if [ ! -f "$RSS_FILE" ]; then
     log_fail "failed to wget RSS file from server"
     exit 1
   fi
-  log_success "success to wget RSS file from server"
+  log_success "success to search RSS file from server"
 
   log_info "start to insert chapter and merge audio"
   while IFS= read -r -d $'\n' file; do

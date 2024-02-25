@@ -44,6 +44,9 @@ jobs:
           INSTAPAPER_USER_NAME: "${{ secrets.INSTAPAPER_USER_NAME }}"
         run: deno run -A main.ts
 
+      - name: Wget silverharp.rss
+        run: wget https://"${{ secrets.SSH_HOST }}"/silverharp -O mp3/silverharp.rss
+
       - name: Merge audio files and insert chapters
         run: TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
 
