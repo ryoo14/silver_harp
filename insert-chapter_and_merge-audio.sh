@@ -51,7 +51,7 @@ if check_command ffmpeg; then
 
   log_info "start to search RSS file from server"
   if [ ! -f "$RSS_FILE" ]; then
-    log_fail "failed to wget RSS file from server"
+    log_fail "failed to search RSS file from server"
     exit 1
   fi
   log_success "success to search RSS file from server"
