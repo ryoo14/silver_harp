@@ -45,7 +45,7 @@ jobs:
         run: deno run -A main.ts
 
       - name: Wget silverharp.rss
-        run: wget https://"${{ secrets.SSH_HOST }}"/silverharp -O mp3/silverharp.rss
+        run: wget https://"${{ secrets.WEB_SERVER }}"/silverharp -O mp3/silverharp.rss
 
       - name: Merge audio files and insert chapters
         run: TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
