@@ -40,15 +40,3 @@ for (const e of entriesExcludeNullAudio) {
 // Generate item for rss
 const itemRSS = generateItemForRSS(entriesExcludeNullAudio)
 Deno.writeTextFileSync(`${Deno.cwd()}/mp3/tmp.rss`, itemRSS)
-
-// Debug
-// deno-lint-ignore no-unused-vars
-function debug(entries: Entry[]) {
-  const minLength = entries.sort((a, b) => a.text.length - b.text.length)[0].title.length
-  for (const e of entries) {
-    console.log(`${e.title.slice(0, minLength)}: ${e.text.length}`)
-  }
-  console.log(entries.reduce((s, e) => s + e.text.length, 0))
-}
-
-//debug(entries)
