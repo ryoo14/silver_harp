@@ -84,6 +84,20 @@ if check_command ffmpeg; then
     msec_duration=$(calc_msec "$duration")
     end=$((start + msec_duration))
     title=${audio%.mp3}
+
+    # check for single quote in the title
+    # if it contains a single quote, rename it to a hypthen
+    if echo "$audio" | grep "\'" > /dev/null; then
+      log_info "it contains a single quote in ${audio}. start to rename."
+      audio_replace_title="${audio//\'/-}"
+      mv "./mp3/${audio}" "./mp3/${audio_replace_title}"
+      if [ -f "./mp3/${audio_replace_title}" ]; then
+        log_success "success to rename ${audio} to ${audio_replace_title}"
+        audio="$audio_replace_title"
+      else
+        log_fail "failed to rename"
+      fi
+    fi
     
     {
       echo "[CHAPTER]"
