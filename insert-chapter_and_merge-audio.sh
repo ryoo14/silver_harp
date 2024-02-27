@@ -87,9 +87,12 @@ if check_command ffmpeg; then
 
     # check for single quote in the title
     # if it contains a single quote, rename it to a hypthen
-    if echo "$audio" | grep "\'" > /dev/null; then
+
+    if echo "$audio" | grep -E "'|\||:" > /dev/null; then
       log_info "it contains a single quote in ${audio}. start to rename."
       audio_replace_title="${audio//\'/-}"
+      audio_replace_title="${audio_replace_title//\|/-}"
+      audio_replace_title="${audio_replace_title//:/-}"
       mv "./mp3/${audio}" "./mp3/${audio_replace_title}"
       if [ -f "./mp3/${audio_replace_title}" ]; then
         log_success "success to rename ${audio} to ${audio_replace_title}"
