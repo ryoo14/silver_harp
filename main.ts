@@ -34,7 +34,7 @@ for (const e of entriesExcludeNullAudio) {
     }
   }
   console.log(`${title}: ${length}(${count})`)
-  Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace("/", "-")}.mp3`, e.audio as Uint8Array)
+  Deno.writeFileSync(`${Deno.cwd()}/mp3/${e.title.replace(/[\|\/]/g, "-")}.mp3`, e.audio as Uint8Array)
 }
 
 // Generate item for rss
