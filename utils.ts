@@ -40,6 +40,8 @@ export function combineAudio(audioArray: Uint8Array[]): Uint8Array {
 }
 
 export function generateItemForRSS(entries: Entry[]): string {
+  const serverName = Deno.env.get("SILVERHARP_SERVER")
+  const userName = Deno.env.get("SILVERHARP_USER")
   const itemHeader = `    <item>
       <title>_TITLE</title>
       <description><![CDATA[ 
@@ -58,15 +60,15 @@ export function generateItemForRSS(entries: Entry[]): string {
   const itemFooter = `    </ul>
       ]]></description>
       <pubDate>_DATE</pubDate>
-      <link>https://sh.ryoo.cc/_AUDIOFILENAME</link>
-        <guid isPermaLink="true">https://sh.ryoo.cc/_AUDIOFILENAME</guid>
-        <itunes:author>ryoo14</itunes:author>
-      <dc:creator>ryoo14</dc:creator>
+      <link>https://${serverName}/_AUDIOFILENAME</link>
+        <guid isPermaLink="true">https://${serverName}/_AUDIOFILENAME</guid>
+        <itunes:author>${userName}</itunes:author>
+      <dc:creator>${userName}</dc:creator>
       
       <itunes:explicit>no</itunes:explicit>
       <itunes:subtitle>_TITLE</itunes:subtitle>
       <itunes:duration>_DURATION</itunes:duration>
-      <enclosure url="https://sh.ryoo.cc/_AUDIOFILENAME" type="audio/mpeg" length="_AUDIOFILELENGTH" />
+      <enclosure url="https://${serverName}/_AUDIOFILENAME" type="audio/mpeg" length="_AUDIOFILELENGTH" />
     </item>
   `
 

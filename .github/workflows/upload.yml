@@ -42,10 +42,12 @@ jobs:
           INSTAPAPER_CONSUMER_SECRET: "${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
           INSTAPAPER_USER_PASSWORD: "${{ secrets.INSTAPAPER_USER_PASSWORD }}"
           INSTAPAPER_USER_NAME: "${{ secrets.INSTAPAPER_USER_NAME }}"
+          SILVERHARP_SERVER: "${{ secrets.SILVERHARP_SERVER }}"
+          SILVERHARP_USER: "${{ secrets.SILVERHARP_USER }}"
         run: deno run -A main.ts
 
       - name: Wget silverharp.rss
-        run: wget https://"${{ secrets.WEB_SERVER }}"/silverharp -O mp3/silverharp.rss
+        run: wget https://"${{ secrets.SILVERHARP_SERVER }}"/silverharp -O mp3/silverharp.rss
 
       - name: Merge audio files and insert chapters
         run: |
