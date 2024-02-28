@@ -2,8 +2,8 @@ name: Create audio files, update RSS feed, and upload to server
 
 on: 
   workflow_dispatch:
-    schedule:
-      - cron: '0 2,15 * * 0-4'
+  schedule:
+    - cron: '0 2,15 * * 0-4'
 
 jobs:
   build-and-deploy:
