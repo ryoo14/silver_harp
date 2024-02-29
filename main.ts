@@ -1,4 +1,4 @@
-import { generateItemForRSS, shouldSkipUrl } from "./utils.ts"
+import { generateItemForRSS } from "./utils.ts"
 import { silverHarp } from "./textToSpeech.ts"
 import { Entry } from "./types.ts"
 import { getTextAndDeleteBookmarks } from "./instapaper.ts"
@@ -8,9 +8,6 @@ const entriesWithNullAudio: Entry[] = await getTextAndDeleteBookmarks()
 // Fetch and Audionaize contents per feeds
 const promiseEntries: Promise<Entry>[] = []
 for (const e of entriesWithNullAudio) {
-  if (shouldSkipUrl(e.url)) {
-    continue
-  }
   promiseEntries.push(silverHarp(e))
 }
 
