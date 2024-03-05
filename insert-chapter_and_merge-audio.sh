@@ -85,11 +85,10 @@ if check_command ffmpeg; then
     end=$((start + msec_duration))
     title=${audio%.mp3}
 
-    # check for single quote in the title
-    # if it contains a single quote, rename it to a hypthen
-
+    # check for single quote, pipe and coron in the title
+    # if it contains, rename it to a hypthen
     if echo "$audio" | grep -E "'|\||:" > /dev/null; then
-      log_info "it contains a single quote in ${audio}. start to rename."
+      log_info "it contains a unsupported character in ${audio}. start to rename."
       audio_replace_title="${audio//\'/-}"
       audio_replace_title="${audio_replace_title//\|/-}"
       audio_replace_title="${audio_replace_title//:/-}"
