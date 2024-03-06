@@ -1,5 +1,5 @@
 import { generateItemForRSS } from "./utils.ts"
-import { silverHarp } from "./textToSpeech.ts"
+import { textToSpeech } from "./textToSpeech.ts"
 import { Entry } from "./types.ts"
 import { getTextAndDeleteBookmarks } from "./instapaper.ts"
 
@@ -9,7 +9,7 @@ const entriesWithNullAudio: Entry[] = await getTextAndDeleteBookmarks()
 // Text to speech
 const promiseEntries: Promise<Entry>[] = []
 for (const e of entriesWithNullAudio) {
-  promiseEntries.push(silverHarp(e))
+  promiseEntries.push(textToSpeech(e))
 }
 
 const entries: Entry[] = await Promise.all(promiseEntries)
