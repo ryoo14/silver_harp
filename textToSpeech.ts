@@ -1,6 +1,6 @@
 import { TextToSpeechClient } from "tts"
 import { Entry } from "./types.ts"
-import { combineAudio, removeHTMLTags } from "./utils.ts"
+import { combineAudio } from "./utils.ts"
 
 export async function silverHarp(entry: Entry): Promise<Entry> {
   const entryWithAudio = await textToSpeech(entry)
@@ -9,8 +9,6 @@ export async function silverHarp(entry: Entry): Promise<Entry> {
 
 async function textToSpeech(entry: Entry): Promise<Entry> {
   try {
-    entry.text = removeHTMLTags(entry.text)
-
     const audioArray = await generateAudio(entry.text)
     entry.audio = combineAudio(audioArray)
 

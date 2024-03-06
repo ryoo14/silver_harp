@@ -1,7 +1,7 @@
 import OAuth from "npm:oauth-1.0a"
 import CryptoJS from "npm:crypto-js"
 import { Bookmark, Entry, RequestConfig, Token } from "./types.ts"
-import { checkResponseCode } from "./utils.ts"
+import { checkResponseCode, removeHTMLTags } from "./utils.ts"
 
 function generateRequest(oauth: OAuth, requestConfig: RequestConfig, token?: Token): Request {
   const oauthData = token ? oauth.authorize(requestConfig, token) : oauth.authorize(requestConfig)
@@ -145,8 +145,13 @@ export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
 
     const entriesWithText: Entry[] = []
     for (const e of entries) {
-      const text = await getBookmarkText(oauth, e.id, token)
-      if (text != null) {
+      // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
+      let text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
+      if (!text) {
+        const res = await fetch(e.url)
+        text = removeHTMLTags(await res.text())
+      }
+      if (text) {
         await deleteBookmark(oauth, e.id, token)
       }
       entriesWithText.push({
