@@ -8,7 +8,7 @@ log_info () {
   echo "INFO: $1"
 }
 
-log_fail () {
+log_error () {
   echo -e "\033[31mERROR: ${1}\033[0m"
 }
 
@@ -28,15 +28,15 @@ calc_msec () {
   echo "$total_msec"
 }
 
-handle_duration () {
-  local time_data=$1
-  time_data=${time_data%.*}
-  if [[ $time_data == 00:* ]]; then
-    local formatted_time="${time_data:3}"
+format_audio_duration () {
+  local raw_duration=$1
+  raw_duration=${raw_duration%.*}
+  if [[ $raw_duration == 00:* ]]; then
+    local formatted_duration="${raw_duration:3}"
   else
-    local formatted_time="${time_data#0}"
+    local formatted_duration="${raw_duration#0}"
   fi
-  echo "$formatted_time"
+  echo "$formatted_duration"
 }
 
 if check_command ffmpeg; then
@@ -51,7 +51,7 @@ if check_command ffmpeg; then
 
   log_info "start to search RSS file from server"
   if [ ! -f "$RSS_FILE" ]; then
-    log_fail "failed to search RSS file from server"
+    log_error "failed to search RSS file from server"
     exit 1
   fi
   log_success "success to search RSS file from server"
@@ -71,7 +71,7 @@ if check_command ffmpeg; then
   if [ -f "$CHAPTER_TEXT_FILE" ]; then
     log_success "create ${CHAPTER_TEXT_FILE}"
   else
-    log_fail "failed to create ${CHAPTER_TEXT_FILE}"
+    log_error "failed to create ${CHAPTER_TEXT_FILE}"
     exit 1
   fi
 
@@ -97,7 +97,7 @@ if check_command ffmpeg; then
         log_success "success to rename ${audio} to ${audio_replace_title}"
         audio="$audio_replace_title"
       else
-        log_fail "failed to rename"
+        log_error "failed to rename"
       fi
     fi
     
@@ -123,7 +123,7 @@ if check_command ffmpeg; then
   if [ -f "$TMP_AUDIO_FILE" ]; then
     log_success "finish to create ${TMP_AUDIO_FILE}"
   else
-    log_fail "failed to create ${TMP_AUDIO_FILE}"
+    log_error "failed to create ${TMP_AUDIO_FILE}"
     exit 1
   fi
 
@@ -133,7 +133,7 @@ if check_command ffmpeg; then
   if [ -f "${MERGE_AUDIO_FILE}" ]; then
     log_success "finish to create ${MERGE_AUDIO_FILE}"
   else
-    log_fail "failed to create ${MERGE_AUDIO_FILE}"
+    log_error "failed to create ${MERGE_AUDIO_FILE}"
     exit 1
   fi
 
@@ -142,16 +142,16 @@ if check_command ffmpeg; then
     RSS_TIME=$([ "${YYYYMMDDHH:8:2}" -lt "05" ] && echo "の朝記事" || echo "の夜記事")
     RSS_TITLE="${YYYYMMDDHH:0:8}${RSS_TIME}"
     RSS_DATE=$(TZ="Asia/Tokyo" date "+%a, %d %b %Y %H:%M:%S %z")
-    RSS_DURATION=$(handle_duration "$(ffmpeg -i "$MERGE_AUDIO_FILE" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")")
+    RSS_DURATION=$(format_audio_duration "$(ffmpeg -i "$MERGE_AUDIO_FILE" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")")
     RSS_AUDIO_FILE_LENGTH=$(ls -l "$MERGE_AUDIO_FILE" | awk '{print $5}')
 
     RSS_ITEM=$(sed -e "s/_TITLE/${RSS_TITLE}/g" -e "s/_DATE/${RSS_DATE}/g" -e "s/_AUDIOFILENAME/${YYYYMMDDHH}.mp3/g" -e "s/_AUDIOFILELENGTH/${RSS_AUDIO_FILE_LENGTH}/g" -e "s/_DURATION/${RSS_DURATION}/g" "$TMP_RSS_FILE")
     RSS_ITEM=$(echo "$RSS_ITEM" | sed ':a;N;$!ba;s/\n/\\n/g')
     sed -i -e "s@<language>ja</language>@&\n${RSS_ITEM}@" "$RSS_FILE"
   else
-    log_fail "not found ${TMP_RSS_FILE}"
+    log_error "not found ${TMP_RSS_FILE}"
   fi
 else
-  log_fail "ffmpeg command not found"
+  log_error "ffmpeg command not found"
   exit 1
 fi
