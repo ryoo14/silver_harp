@@ -147,7 +147,7 @@ if check_command ffmpeg; then
 
     RSS_ITEM=$(sed -e "s/_TITLE/${RSS_TITLE}/g" -e "s/_DATE/${RSS_DATE}/g" -e "s/_AUDIOFILENAME/${YYYYMMDDHH}.mp3/g" -e "s/_AUDIOFILELENGTH/${RSS_AUDIO_FILE_LENGTH}/g" -e "s/_DURATION/${RSS_DURATION}/g" "$TMP_RSS_FILE")
     RSS_ITEM=$(echo "$RSS_ITEM" | sed ':a;N;$!ba;s/\n/\\n/g')
-    sed -i -e "s@<language>ja</language>@&\n${RSS_ITEM}@" "$RSS_FILE"
+    sed -i -e "s|<language>ja</language>|&\n${RSS_ITEM}|" "$RSS_FILE"
   else
     log_error "not found ${TMP_RSS_FILE}"
   fi
