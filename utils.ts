@@ -9,14 +9,7 @@ export function removeHTMLTags(text: string): string {
 }
 
 export function checkResponseCode(response: Response): boolean {
-  let flag
-  if (response.status === 200) {
-    flag = true
-  } else {
-    flag = false
-  }
-
-  return flag
+  return response.status === 200
 }
 
 export function combineAudio(audioArray: Uint8Array[]): Uint8Array {
