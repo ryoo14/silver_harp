@@ -58,3 +58,25 @@ export function generateItemForRSS(entries: Entry[]): string {
 
   return itemHeader + itemBase + itemFooter
 }
+
+export function separateSentenceWithPeriods(text: string): Array<string> {
+  const sentenceList = text.split("。").map((t) => t += "。")
+  const lastArray = []
+  let str = ""
+  for (const s of sentenceList) {
+    if (str === "") {
+      str += s
+      continue
+    }
+
+    if (str.length + s.length >= 1500) {
+      lastArray.push(str)
+      str = ""
+    }
+
+    str += s
+  }
+
+  lastArray.push(str)
+  return lastArray
+}

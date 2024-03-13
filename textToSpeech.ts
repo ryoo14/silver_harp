@@ -1,6 +1,6 @@
 import { TextToSpeechClient } from "tts"
 import { Entry } from "./types.ts"
-import { combineAudio } from "./utils.ts"
+import { combineAudio, separateSentenceWithPeriods } from "./utils.ts"
 
 export async function textToSpeech(entry: Entry): Promise<Entry> {
   try {
@@ -16,14 +16,17 @@ export async function textToSpeech(entry: Entry): Promise<Entry> {
 }
 
 async function generateAudio(text: string) {
+  const textArray = separateSentenceWithPeriods(text)
   const json = JSON.parse(Deno.readTextFileSync("silverharp.json"))
   const client = new TextToSpeechClient({
     credentials: json,
   })
   const audioArray = []
-  for (let i = 0; i < text.length; i += 1500) {
+  for (const t of textArray) {
+  //for (let i = 0; i < text.length; i += 1500) {
     const request = {
-      input: { text: text.slice(i, i + 1500) },
+  //    input: { text: text.slice(i, i + 1500) },
+      input: { text: t },
       voice: {
         languageCode: "ja-JP",
         ssmlGender: "FEMALE",
