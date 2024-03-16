@@ -60,23 +60,24 @@ export function generateItemForRSS(entries: Entry[]): string {
 }
 
 export function separateSentenceWithPeriods(text: string): Array<string> {
-  const sentenceList = text.split("。").map((t) => t += "。")
-  const lastArray = []
-  let str = ""
-  for (const s of sentenceList) {
-    if (str === "") {
-      str += s
-      continue
-    }
+  const delimiter = text.includes("。") ? "。" : "."
+  const sentenceList = text.split(delimiter).map((t) => t += delimiter)
 
-    if (str.length + s.length >= 1500) {
-      lastArray.push(str)
-      str = ""
-    }
+  const textArray = []
+  let currentText = ""
 
-    str += s
+  sentenceList.forEach(sentence => {
+    if (currentText.length + sentence.length < 1500) {
+      currentText += sentence
+    } else {
+      textArray.push(currentText)
+      currentText = sentence
+    }
+  })
+
+  if (currentText) {
+    textArray.push(currentText)
   }
 
-  lastArray.push(str)
-  return lastArray
+  return textArray
 }
