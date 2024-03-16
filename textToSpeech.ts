@@ -23,9 +23,7 @@ async function generateAudio(text: string) {
   })
   const audioArray = []
   for (const t of textArray) {
-  //for (let i = 0; i < text.length; i += 1500) {
     const request = {
-  //    input: { text: text.slice(i, i + 1500) },
       input: { text: t },
       voice: {
         languageCode: "ja-JP",
