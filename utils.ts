@@ -60,7 +60,7 @@ export function generateItemForRSS(entries: Entry[]): string {
   return itemHeader + itemBase + itemFooter
 }
 
-export function separateSentenceWithPeriods(text: string): Array<string> {
+export function separateSentenceWithPeriods(text: string): string[] {
   const delimiter = text.includes("。") ? "。" : "."
   const sentenceList = text.split(delimiter).map((t) => t += delimiter)
 
