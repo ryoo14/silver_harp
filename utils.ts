@@ -24,8 +24,9 @@ export function combineAudio(audioArray: Uint8Array[]): Uint8Array {
 }
 
 export function generateItemForRSS(entries: Entry[]): string {
-  const serverName = Deno.env.get("SILVERHARP_SERVER")
-  const userName = Deno.env.get("SILVERHARP_USER")
+  const serverName = Deno.env.get("SILVERHARP_SERVER") as string
+  const userName = Deno.env.get("SILVERHARP_USER") as string
+
   const itemHeader = `    <item>
       <title>_TITLE</title>
       <description><![CDATA[ 
@@ -66,7 +67,7 @@ export function separateSentenceWithPeriods(text: string): Array<string> {
   const textArray = []
   let currentText = ""
 
-  sentenceList.forEach(sentence => {
+  sentenceList.forEach((sentence) => {
     if (currentText.length + sentence.length < 1500) {
       currentText += sentence
     } else {
@@ -80,4 +81,15 @@ export function separateSentenceWithPeriods(text: string): Array<string> {
   }
 
   return textArray
+}
+
+export function checkEnvironmentVariables(varsArray: string[]): string[] {
+  const undefinedEnvironmentVariables: string[] = []
+  varsArray.forEach((varString) => {
+    if (!Deno.env.get(varString)) {
+      undefinedEnvironmentVariables.push(varString)
+    }
+  })
+
+  return undefinedEnvironmentVariables
 }

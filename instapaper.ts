@@ -23,11 +23,8 @@ function generateRequest(oauth: OAuth, requestConfig: RequestConfig, token?: Tok
 }
 
 async function getToken(oauth: OAuth): Promise<Token> {
-  const username = Deno.env.get("INSTAPAPER_USER_NAME")
-  const password = Deno.env.get("INSTAPAPER_USER_PASSWORD")
-  if (!username || !password) {
-    throw new Error("Error: Required environment variable 'INSTAPAPER_USER_XXX' is not defined. Please set it before running the application.")
-  }
+  const username = Deno.env.get("INSTAPAPER_USER_NAME") as string
+  const password = Deno.env.get("INSTAPAPER_USER_PASSWORD") as string
 
   const requestConfig: RequestConfig = {
     method: "POST",
@@ -123,11 +120,8 @@ function generateEntryFromBookmarks(bookmarks: Bookmark[]): Entry[] {
 
 export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
   try {
-    const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY")
-    const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET")
-    if (!consumerKey || !consumerSecret) {
-      throw new Error("Error: Required environment variable 'INSTAPAPER_CONSUMER_XXX' is not defined. Please set it before running the application.")
-    }
+    const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY") as string
+    const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET") as string
 
     // Get oatuh_token and oauth_token_secret
     const oauth = new OAuth({
