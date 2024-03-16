@@ -106,7 +106,7 @@ if check_command ffmpeg; then
       echo "TIMEBASE=1/1000"
       echo "START=${start}"
       echo "END=${end}"
-      echo "title=${title}"
+      echo "title=${title:0:20}"
       echo ""
     } >> "$CHAPTER_TEXT_FILE"
     
