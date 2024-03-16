@@ -119,47 +119,42 @@ function generateEntryFromBookmarks(bookmarks: Bookmark[]): Entry[] {
 }
 
 export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
-  try {
-    const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY") as string
-    const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET") as string
+  const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY") as string
+  const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET") as string
 
-    // Get oatuh_token and oauth_token_secret
-    const oauth = new OAuth({
-      consumer: { key: consumerKey, secret: consumerSecret },
-      signature_method: "HMAC-SHA1",
-      hash_function(base, key) {
-        return CryptoJS.HmacSHA1(base, key).toString(CryptoJS.enc.Base64)
-      },
-    })
+  // Get oatuh_token and oauth_token_secret
+  const oauth = new OAuth({
+    consumer: { key: consumerKey, secret: consumerSecret },
+    signature_method: "HMAC-SHA1",
+    hash_function(base, key) {
+      return CryptoJS.HmacSHA1(base, key).toString(CryptoJS.enc.Base64)
+    },
+  })
 
-    const token: Token = await getToken(oauth)
+  const token: Token = await getToken(oauth)
 
-    const bookmarks: Bookmark[] = await getBookmarks(oauth, token)
-    const entries: Entry[] = generateEntryFromBookmarks(bookmarks)
+  const bookmarks: Bookmark[] = await getBookmarks(oauth, token)
+  const entries: Entry[] = generateEntryFromBookmarks(bookmarks)
 
-    const entriesWithText: Entry[] = []
-    for (const e of entries) {
-      // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
-      let text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
-      if (!text) {
-        const res = await fetch(e.url)
-        text = removeHTMLTags(await res.text())
-      }
-      if (text) {
-        await deleteBookmark(oauth, e.id, token)
-      }
-      entriesWithText.push({
-        id: e.id,
-        title: e.title,
-        url: e.url,
-        text: text,
-        audio: null,
-      })
+  const entriesWithText: Entry[] = []
+  for (const e of entries) {
+    // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
+    let text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
+    if (!text) {
+      const res = await fetch(e.url)
+      text = removeHTMLTags(await res.text())
     }
-
-    return entriesWithText
-  } catch (e) {
-    console.error(e)
-    Deno.exit(1)
+    if (text) {
+      await deleteBookmark(oauth, e.id, token)
+    }
+    entriesWithText.push({
+      id: e.id,
+      title: e.title,
+      url: e.url,
+      text: text,
+      audio: null,
+    })
   }
+
+  return entriesWithText
 }
