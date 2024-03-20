@@ -1,4 +1,4 @@
-name: Create audio files, update RSS feed, and upload to server
+name: Silver Harp
 
 on: 
   workflow_dispatch:
@@ -24,12 +24,12 @@ jobs:
       - name: Create MP3 Dir
         run: mkdir mp3
 
-      - name: Create JSON
+      - name: Create Authentication JSON
         env: 
           JSON: "${{ secrets.GOOGLE_AUTH }}"
         run: echo "$JSON" >> silverharp.json
 
-      - name: Setup ffmpeg
+      - name: Setup ffmpeg command
         uses: FedericoCarboni/setup-ffmpeg@v3
         with:
           ffmpeg-version: release
@@ -38,7 +38,7 @@ jobs:
           # except on Windows: https://github.com/GyanD/codexffmpeg/releases.
           github-token: ${{ github.server_url == 'https://github.com' && github.token || '' }}
 
-      - name: Instapaper API
+      - name: Generate audio files from Instapaper, and create temporary RSS feed
         env:
           INSTAPAPER_CONSUMER_KEY: "${{ secrets.INSTAPAPER_CONSUMER_KEY }}"
           INSTAPAPER_CONSUMER_SECRET: "${{ secrets.INSTAPAPER_CONSUMER_SECRET }}"
@@ -48,7 +48,7 @@ jobs:
           SILVERHARP_USER: "${{ secrets.SILVERHARP_USER }}"
         run: deno run -A main.ts
 
-      - name: Wget silverharp.rss
+      - name: Download the existing silverharp.rss
         run: wget https://"${{ secrets.SILVERHARP_SERVER }}"/silverharp -O mp3/silverharp.rss
 
       - name: Merge audio files and insert chapters
