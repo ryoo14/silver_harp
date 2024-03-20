@@ -49,37 +49,37 @@ if check_command ffmpeg; then
   TMP_AUDIO_FILE="./mp3/tmp.mp3"
   TMP_RSS_FILE="./mp3/tmp.rss"
 
-  log_info "start to search RSS file from server"
+  log_info "Start to search RSS file from server."
   if [ ! -f "$RSS_FILE" ]; then
-    log_error "failed to search RSS file from server"
+    log_error "Failed to search RSS file from server."
     exit 1
   fi
-  log_success "success to search RSS file from server"
+  log_success "Successfully searched RSS file from server."
 
-  log_info "start to insert chapter and merge audio"
+  log_info "Start to merge audio and insert chapter."
   while IFS= read -r -d $'\n' file; do
     AUDIO_FILE_ARRAY+=("$file")
   done < <(find ./mp3 -type f -name "*.mp3" -exec basename {} \; | sort)
   if [ "${#AUDIO_FILE_ARRAY[@]}" -eq 0 ]; then
-    log_info "audio file does not exist"
+    log_info "The audio file does not exist."
     exit 0
   fi
 
-  log_info "start to input header to ${CHAPTER_TEXT_FILE}"
+  log_info "Start to input header to ${CHAPTER_TEXT_FILE}."
   echo ";FFMETADATA1" >> "$CHAPTER_TEXT_FILE"
   echo "" >> "$CHAPTER_TEXT_FILE"
   if [ -f "$CHAPTER_TEXT_FILE" ]; then
-    log_success "create ${CHAPTER_TEXT_FILE}"
+    log_success "Successfully created ${CHAPTER_TEXT_FILE}."
   else
-    log_error "failed to create ${CHAPTER_TEXT_FILE}"
+    log_error "Failed to create ${CHAPTER_TEXT_FILE}."
     exit 1
   fi
 
   start=0
-  log_info "start to create chapter and entry for merge per audio"
+  log_info "Start to create chapter and entry for merge per audio."
   for audio in "${AUDIO_FILE_ARRAY[@]}"; do
     # insert the chapter info to the text file for chapter
-    log_info "start ${audio%.mp3}"
+    log_info "Start ${audio%.mp3}."
     duration=$(ffmpeg -i "./mp3/${audio}" 2>&1 | grep -i "duration:" | awk '{print $2}' | tr -d ",")
     msec_duration=$(calc_msec "$duration")
     end=$((start + msec_duration))
@@ -88,16 +88,16 @@ if check_command ffmpeg; then
     # check for single quote, pipe and coron in the title
     # if it contains, rename it to a hypthen
     if echo "$audio" | grep -E "'|\||:" > /dev/null; then
-      log_info "it contains a unsupported character in ${audio}. start to rename."
+      log_info "It contains a unsupported character in ${audio}. Start to rename."
       audio_replace_title="${audio//\'/-}"
       audio_replace_title="${audio_replace_title//\|/-}"
       audio_replace_title="${audio_replace_title//:/-}"
       mv "./mp3/${audio}" "./mp3/${audio_replace_title}"
       if [ -f "./mp3/${audio_replace_title}" ]; then
-        log_success "success to rename ${audio} to ${audio_replace_title}"
+        log_success "Successfully renamed ${audio} to ${audio_replace_title}."
         audio="$audio_replace_title"
       else
-        log_error "failed to rename"
+        log_error "Failed to rename."
       fi
     fi
     
@@ -114,30 +114,30 @@ if check_command ffmpeg; then
 
     # insert the file path to the text file for merge
     echo "file '${audio}'" >> "$MERGE_TEXT_FILE"
-    log_success "finish ${audio%.mp3}"
+    log_success "Finish ${audio%.mp3}."
   done
 
   # create the temporary merged audio
-  log_info "start to create tempotary merged audio"
+  log_info "Start to create tempotary merged audio."
   ffmpeg -f concat -safe 0 -i "$MERGE_TEXT_FILE" -c copy "$TMP_AUDIO_FILE"
   if [ -f "$TMP_AUDIO_FILE" ]; then
-    log_success "finish to create ${TMP_AUDIO_FILE}"
+    log_success "Successfully created ${TMP_AUDIO_FILE}."
   else
-    log_error "failed to create ${TMP_AUDIO_FILE}"
+    log_error "Failed to create ${TMP_AUDIO_FILE}."
     exit 1
   fi
 
   # create the merged audio with chapters
-  log_info "start to create merged audio"
+  log_info "Start to create merged audio."
   ffmpeg -i "$TMP_AUDIO_FILE" -i "$CHAPTER_TEXT_FILE" -map_metadata 1 -c copy "$MERGE_AUDIO_FILE"
   if [ -f "${MERGE_AUDIO_FILE}" ]; then
-    log_success "finish to create ${MERGE_AUDIO_FILE}"
+    log_success "Successfully created ${MERGE_AUDIO_FILE}."
   else
-    log_error "failed to create ${MERGE_AUDIO_FILE}"
+    log_error "Failed to create ${MERGE_AUDIO_FILE}."
     exit 1
   fi
 
-  # create renwe RSS
+  # create renew RSS
   if [ -f "$TMP_RSS_FILE" ]; then
     RSS_TIME=$([ "${YYYYMMDDHH:8:2}" -lt "05" ] && echo "の朝記事" || echo "の夜記事")
     RSS_TITLE="${YYYYMMDDHH:0:8}${RSS_TIME}"
@@ -149,9 +149,10 @@ if check_command ffmpeg; then
     RSS_ITEM=$(echo "$RSS_ITEM" | sed ':a;N;$!ba;s/\n/\\n/g')
     sed -i -e "s|<language>ja</language>|&\n${RSS_ITEM}|" "$RSS_FILE"
   else
-    log_error "not found ${TMP_RSS_FILE}"
+    log_error "${TMP_RSS_FILE} can't be found. The text-to-speech process might be failing or not operating."
+    exit 1
   fi
 else
-  log_error "ffmpeg command not found"
+  log_error "ffmpeg command can't be found."
   exit 1
 fi
