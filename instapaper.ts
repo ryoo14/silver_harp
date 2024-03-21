@@ -138,14 +138,20 @@ export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
 
   const entriesWithText: Entry[] = []
   for (const e of entries) {
-    // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
-    let text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
-    if (!text) {
-      const res = await fetch(e.url)
-      text = removeHTMLTags(await res.text())
-    }
-    if (text) {
-      await deleteBookmark(oauth, e.id, token)
+    let text
+    try {
+      // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
+      text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
+      if (!text) {
+        const res = await fetch(e.url)
+        text = removeHTMLTags(await res.text())
+      }
+      if (text) {
+        await deleteBookmark(oauth, e.id, token)
+      }
+    } catch (e) {
+      console.error(e.message)
+      text = ""
     }
     entriesWithText.push({
       id: e.id,
