@@ -2,6 +2,7 @@ import { Entry } from "./types.ts"
 
 export function removeHTMLTags(text: string): string {
   return text.replace(/(<(head|script|style|header|footer|nav|iframe|aside)[^>]*>([\s\S]*?)<\/(head|script|style|header|footer|nav|iframe|aside)>)/g, "")
+    .replace("</li>", "。")
     .replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, "")
     .replace(/\s{2,}/g, " ")
     .replace(/anond:[0-9]{14}/g, "。") // hatena masuda
