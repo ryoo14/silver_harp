@@ -37,4 +37,3 @@ Contributions to the project are welcome. If you have suggestions for improvemen
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
