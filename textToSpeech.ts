@@ -28,7 +28,7 @@ async function generateAudio(text: string) {
       voice: {
         languageCode: "ja-JP",
         ssmlGender: "FEMALE",
-        name: "ja-JP-Wavenet-A", // "ja-JP-Wavenet-A", "ja-JP-Standard-A", "ja-JP-Neural2-B"
+        name: "ja-JP-Neural2-B", // "ja-JP-Wavenet-A", "ja-JP-Standard-A", "ja-JP-Neural2-B"
       },
       audioConfig: {
         audioEncoding: "MP3",
