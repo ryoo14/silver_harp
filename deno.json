@@ -4,7 +4,7 @@
     "dev": "deno fmt && deno lint"
   },
   "imports": {
-    "tts": "https://esm.sh/@google-cloud/text-to-speech@5.0.2"
+    "tts": "https://esm.sh/@google-cloud/text-to-speech@5.5.0"
   },
   "fmt": {
     "semiColons": false,
