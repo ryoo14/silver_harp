@@ -19,7 +19,7 @@ async function generateAudio(text: string) {
   const textArray = separateSentenceWithPeriods(text)
   const credentialJson = JSON.parse(Deno.readTextFileSync("silverharp.json"))
   const client = new TextToSpeechClient({
-    credentials: json,
+    credentials: credentialJson,
   })
   const audioArray = []
   for (const t of textArray) {
