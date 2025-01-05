@@ -17,7 +17,7 @@ export async function textToSpeech(entry: Entry): Promise<Entry> {
 
 async function generateAudio(text: string) {
   const textArray = separateSentenceWithPeriods(text)
-  const json = JSON.parse(Deno.readTextFileSync("silverharp.json"))
+  const credentialJson = JSON.parse(Deno.readTextFileSync("silverharp.json"))
   const client = new TextToSpeechClient({
     credentials: json,
   })
