@@ -4,11 +4,13 @@
     "dev": "deno fmt && deno lint"
   },
   "imports": {
-    "tts": "https://esm.sh/@google-cloud/text-to-speech@5.5.0"
+    "gcp-metadata": "npm:gcp-metadata@6.1.0",
+    "tts": "npm:@google-cloud/text-to-speech"
   },
   "fmt": {
     "semiColons": false,
     "useTabs": false,
     "lineWidth": 160
-  }
+  },
+  "nodeModulesDir": "auto"
 }
