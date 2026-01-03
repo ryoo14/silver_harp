@@ -56,12 +56,11 @@ jobs:
           TZ="Asia/Tokyo" bash insert-chapter_and_merge-audio.sh
           echo "CHECKING_FILE=$(if [ -f mp3/$(TZ="Asia/Tokyo" date +"%Y%m%d%H".mp3) ]; then echo 'true'; else echo 'false'; fi)" >> $GITHUB_ENV
 
-      - name: Create known_hosts
-        if: env.CHECKING_FILE == 'true'
+      - name: Setup SSH
         run: |
-          mkdir ~/.ssh
+          mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.HOST }}" >> ~/.ssh/known_hosts || echo "ssh-keyscan failed"
 
       - name: SCP Transfer
         if: env.CHECKING_FILE == 'true'
