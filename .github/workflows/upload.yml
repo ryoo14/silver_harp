@@ -60,7 +60,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -H "${{ secrets.HOST }}" >> ~/.ssh/known_hosts || echo "ssh-keyscan failed"
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts || echo "ssh-keyscan failed"
 
       - name: SCP Transfer
         if: env.CHECKING_FILE == 'true'
