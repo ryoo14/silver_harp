@@ -4,8 +4,8 @@
     "dev": "deno fmt && deno lint"
   },
   "imports": {
-    "gcp-metadata": "npm:gcp-metadata@6.1.0",
-    "tts": "npm:@google-cloud/text-to-speech"
+    "gcp-metadata": "npm:gcp-metadata@8.1.2",
+    "tts": "npm:@google-cloud/text-to-speech@6.4.0"
   },
   "fmt": {
     "semiColons": false,
