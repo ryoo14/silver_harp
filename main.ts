@@ -5,7 +5,7 @@ import { getTextAndDeleteBookmarks } from "./instapaper.ts"
 
 try {
   // Check environment variable
-  const environmentVarialbes = [
+  const environmentVariables = [
     "INSTAPAPER_USER_NAME",
     "INSTAPAPER_USER_PASSWORD",
     "INSTAPAPER_CONSUMER_KEY",
@@ -14,7 +14,7 @@ try {
     "SILVERHARP_USER",
   ]
 
-  const undefinedEnvironmentVariables = checkEnvironmentVariables(environmentVarialbes)
+  const undefinedEnvironmentVariables = checkEnvironmentVariables(environmentVariables)
 
   if (undefinedEnvironmentVariables.length !== 0) {
     throw new Error(`Error: Required to define the environment variable(${undefinedEnvironmentVariables}).`)
@@ -33,6 +33,7 @@ try {
   const entriesExcludeNullAudio: Entry[] = entries.filter((e) => e.audio != null)
 
   // Output the article's title and its length, and then save the audio file
+  Deno.mkdirSync(`${Deno.cwd()}/mp3`, { recursive: true })
   for (const e of entriesExcludeNullAudio) {
     const length = e.text.length
     const title = e.title
@@ -44,6 +45,6 @@ try {
   const itemRSS = generateItemForRSS(entriesExcludeNullAudio)
   Deno.writeTextFileSync(`${Deno.cwd()}/mp3/tmp.rss`, itemRSS)
 } catch (e) {
-  console.log(e.message)
+  if (e instanceof Error) console.log(e.message)
   Deno.exit(1)
 }

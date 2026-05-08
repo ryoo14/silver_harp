@@ -17,11 +17,16 @@ export async function textToSpeech(entry: Entry): Promise<Entry> {
 
 async function generateAudio(text: string) {
   const textArray = separateSentenceWithPeriods(text)
-  const credentialJson = JSON.parse(Deno.readTextFileSync("silverharp.json"))
+  let credentialJson
+  try {
+    credentialJson = JSON.parse(Deno.readTextFileSync("silverharp.json"))
+  } catch {
+    throw new Error("Failed to load credential file: silverharp.json")
+  }
   const client = new TextToSpeechClient({
     credentials: credentialJson,
   })
-  const audioArray = []
+  const audioArray: Uint8Array[] = []
   for (const t of textArray) {
     const request = {
       input: { text: t },
