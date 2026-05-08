@@ -24,9 +24,8 @@ Deno.test("removeHTMLTags: removes script block with its content", () => {
   assertEquals(removeHTMLTags("<script>var x=1</script>after"), "after")
 })
 
-// 挙動: 最初の </li> は 。 に変換される。それ以降の </li> はジェネリックタグ正規表現で除去される（。にはならない）
-Deno.test("removeHTMLTags: first </li> becomes 。, subsequent </li> are stripped", () => {
-  assertEquals(removeHTMLTags("item</li>next</li>"), "item。next")
+Deno.test("removeHTMLTags: all </li> are replaced with 。", () => {
+  assertEquals(removeHTMLTags("item</li>next</li>"), "item。next。")
 })
 
 Deno.test("removeHTMLTags: collapses multiple whitespace to single space", () => {
