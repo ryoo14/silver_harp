@@ -23,8 +23,8 @@ function generateRequest(oauth: OAuth, requestConfig: RequestConfig, token?: Tok
 }
 
 async function getToken(oauth: OAuth): Promise<Token> {
-  const username = Deno.env.get("INSTAPAPER_USER_NAME") as string
-  const password = Deno.env.get("INSTAPAPER_USER_PASSWORD") as string
+  const username = Deno.env.get("INSTAPAPER_USER_NAME") ?? ""
+  const password = Deno.env.get("INSTAPAPER_USER_PASSWORD") ?? ""
 
   const requestConfig: RequestConfig = {
     method: "POST",
@@ -119,8 +119,8 @@ function generateEntryFromBookmarks(bookmarks: Bookmark[]): Entry[] {
 }
 
 export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
-  const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY") as string
-  const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET") as string
+  const consumerKey = Deno.env.get("INSTAPAPER_CONSUMER_KEY") ?? ""
+  const consumerSecret = Deno.env.get("INSTAPAPER_CONSUMER_SECRET") ?? ""
 
   // Get oatuh_token and oauth_token_secret
   const oauth = new OAuth({
@@ -138,7 +138,7 @@ export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
 
   const entriesWithText: Entry[] = []
   for (const e of entries) {
-    let text
+    let text: string = ""
     try {
       // Combining removeHTMLTag into a single operation at the end makes it impossible to determine if the text retrieved from Instapaper is effectively empty.
       text = removeHTMLTags(await getBookmarkText(oauth, e.id, token))
