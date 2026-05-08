@@ -9,7 +9,7 @@ export async function textToSpeech(entry: Entry): Promise<Entry> {
 
     return entry
   } catch (e) {
-    console.error(e.message)
+    if (e instanceof Error) console.error(e.message)
     entry.audio = null
     return entry
   }
@@ -27,15 +27,16 @@ async function generateAudio(text: string) {
       input: { text: t },
       voice: {
         languageCode: "ja-JP",
-        ssmlGender: "FEMALE",
+        ssmlGender: "FEMALE" as const,
         name: "ja-JP-Neural2-B", // "ja-JP-Wavenet-A", "ja-JP-Standard-A", "ja-JP-Neural2-B"
       },
       audioConfig: {
-        audioEncoding: "MP3",
+        audioEncoding: "MP3" as const,
         speakingRate: 1.3,
       },
     }
-    const [response] = await client.synthesizeSpeech(request)
+    // deno-lint-ignore no-explicit-any
+    const [response] = await (client.synthesizeSpeech(request) as unknown as Promise<any[]>)
     audioArray.push(response.audioContent)
   }
   return audioArray

@@ -1,7 +1,8 @@
 {
   "tasks": {
     "run": "deno run -A main.ts",
-    "dev": "deno fmt && deno lint"
+    "dev": "deno fmt && deno lint",
+    "test": "deno test --allow-env --allow-read utils_test.ts instapaper_test.ts textToSpeech_test.ts"
   },
   "imports": {
     "gcp-metadata": "npm:gcp-metadata@8.1.2",

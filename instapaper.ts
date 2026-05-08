@@ -150,7 +150,7 @@ export async function getTextAndDeleteBookmarks(): Promise<Entry[]> {
         await deleteBookmark(oauth, e.id, token)
       }
     } catch (e) {
-      console.error(e.message)
+      if (e instanceof Error) console.error(e.message)
       text = ""
     }
     entriesWithText.push({
