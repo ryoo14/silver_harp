@@ -1,5 +1,5 @@
-import { assertEquals } from "jsr:@std/assert"
-import { stub } from "jsr:@std/testing/mock"
+import { assertEquals } from "@std/assert"
+import { stub } from "@std/testing/mock"
 import { TextToSpeechClient } from "tts"
 import { textToSpeech } from "./textToSpeech.ts"
 import type { Entry } from "./types.ts"
