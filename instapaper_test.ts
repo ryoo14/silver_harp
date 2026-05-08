@@ -1,5 +1,5 @@
-import { assertEquals, assertRejects } from "jsr:@std/assert"
-import { stub } from "jsr:@std/testing/mock"
+import { assertEquals, assertRejects } from "@std/assert"
+import { stub } from "@std/testing/mock"
 import { getTextAndDeleteBookmarks } from "./instapaper.ts"
 import type { Bookmark } from "./types.ts"
 
